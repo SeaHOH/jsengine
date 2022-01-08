@@ -24,6 +24,10 @@ class ExternalJSEngine(AbstractJSEngine):
 
     def __init__(self, source=u'', init_global=False, init_del_gobjects=[],
                        interpreter=None, **kwargs):
+        '''
+            (interpreter, **kwargs):
+                same as ExternalInterpreter.__init__
+        '''
         if isinstance(interpreter, str):
             interpreter = ExternalInterpreter.get(interpreter, **kwargs)
         if isinstance(interpreter, ExternalInterpreter):
@@ -42,6 +46,8 @@ class ExternalJSEngine(AbstractJSEngine):
         # Del 'exports' to ignore import error, e.g. Node.js
         init_del_gobjects = list(init_del_gobjects) + ['exports']
         AbstractJSEngine.__init__(self, source, init_global, init_del_gobjects)
+
+    __init__.__doc__ = AbstractJSEngine.__init__.__doc__ + __init__.__doc__[9:]
 
     def _append(self, code):
         self._append_source(code)
@@ -130,16 +136,35 @@ class ExternalJSEngine(AbstractJSEngine):
 
 
 class ExternalInterpreter:
-    '''Create an external interpreter setting.'''
+    '''External interpreter setting.'''
 
     @classmethod
     def get(cls, *args, **kwargs):
+        '''Same as cls.__init__, the fallback is None.'''
         try:
             return cls(*args, **kwargs)
         except Exception as e:
             print(e, file=sys.stderr)
 
     def __init__(self, interpreter, name=None, tempfile=False, evalstring=False, args=None):
+        '''Create an external interpreter setting.
+
+        params:
+            interpreter:
+                None means default interpreter by detected,
+                or the filename/filepath of a interpreter,
+                or a ExternalInterpreter instance.
+            name:
+                use to get default setting, see ExternalInterpreterNameAlias.
+            tempfile:
+                whether to use tempfile or not to pass Javascript code.
+            evalstring:
+                whether to use shell cmd or not to pass Javascript code.
+                if set True, default param is `-c`.
+                here also accept other valid params likes `--execute`
+            args:
+                any valid params of the interpreter.
+        '''
         path = which(interpreter)
         if path is None:
             raise ValueError('Can not find the given interpreter: %r' % interpreter)

@@ -10,7 +10,7 @@ from jsengine.internal import QuickJSEngine, ChakraJSEngine
 from jsengine.external import ExternalJSEngine, ExternalInterpreter
 
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 __all__ = ['JSEngine', 'ChakraJSEngine', 'QuickJSEngine', 'ExternalJSEngine',
            'ExternalInterpreter', 'set_external_interpreter',
@@ -41,20 +41,21 @@ elif _d.external_interpreter:
     JSEngine = ExternalJSEngine
 else:
     JSEngine = None
-    if platform.system() in ('Darwin', 'Windows', 'Linux'):
-        _msg = 'No supported Javascript interpreter has been found'
-    else:
-        _msg = 'Your system does not be supported officially'
-    _msg += ', please try install one of Gjs, CJS, QuickJS, JavaScriptCore, Node.js'
 
 
 def jsengine():
-    '''Return a context of the default Javascript engine.'''
-    if JSEngine is None:
-        raise RuntimeError(_msg)
-    return JSEngine()
+    '''Create a context of the default Javascript engine.'''
+    if JSEngine:
+        return JSEngine()
 
-def eval(js):
+    if platform.system() in ('Darwin', 'Windows', 'Linux'):
+        msg = 'No supported Javascript interpreter has been found'
+    else:
+        msg = 'Your system does not be supported officially'
+    msg += ', please try install one of Gjs, CJS, QuickJS, JavaScriptCore, Node.js'
+    raise RuntimeError(msg)
+
+def eval(source):
     '''Run Javascript code use the default engine and return result.'''
-    return jsengine().eval(js)
+    return jsengine().eval(source)
 

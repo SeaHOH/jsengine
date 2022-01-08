@@ -19,7 +19,18 @@ if (typeof {gobject} !== 'undefined')
 
 
 class AbstractJSEngine(object):
-    def __init__(self, source=u'', init_global=False, init_del_gobjects=None):
+
+    def __init__(self, source=u'', init_global=False, init_del_gobjects=[]):
+        '''Create a JSEngine content.
+
+        Params:
+            source:
+                any valid Javescript.
+            init_global:
+                set True to ensure `global` and `globalThis` are available.
+            init_del_gobjects:
+                use to delete some variables in the global.
+        '''
         self._source = []
         init_script = []
         if init_global:
@@ -27,7 +38,7 @@ class AbstractJSEngine(object):
         if init_del_gobjects:
             for gobject in init_del_gobjects:
                 init_script.append(init_del_gobject_script.format(gobject=gobject))
-        self._source.append(u''.join(init_script))
+        self.append(u''.join(init_script))
         self.append(source)
 
     @property

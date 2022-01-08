@@ -25,7 +25,7 @@ class InternalJSEngine(AbstractJSEngine):
 class ChakraJSEngine(InternalJSEngine):
     '''Wrappered for system's built-in Chakra or PyChakra(ChakraCore).'''
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, source=u'', init_global=False, init_del_gobjects=[]):
         if not _d.chakra_available:
             msg = 'No supported Chakra binary found on your system!'
             if _d.quickjs_available:
@@ -35,7 +35,9 @@ class ChakraJSEngine(InternalJSEngine):
             else:
                 msg += ' Please install PyChakra.'
             raise RuntimeError(msg)
-        InternalJSEngine.__init__(self, *args, **kwargs)
+        InternalJSEngine.__init__(self, source, init_global, init_del_gobjects)
+
+    __init__.__doc__ = AbstractJSEngine.__init__.__doc__
 
     class Context:
         def __init__(self, engine):
@@ -55,7 +57,7 @@ class ChakraJSEngine(InternalJSEngine):
 class QuickJSEngine(InternalJSEngine):
     '''Wrappered for QuickJS python binding quickjs.'''
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, source=u'', init_global=False, init_del_gobjects=[]):
         if not _d.quickjs_available:
             msg = 'No supported QuickJS package found on custom python environment!'
             if _d.chakra_available:
@@ -65,7 +67,9 @@ class QuickJSEngine(InternalJSEngine):
             else:
                 msg += ' Please install python package quickjs.'
             raise RuntimeError(msg)
-        InternalJSEngine.__init__(self, *args, **kwargs)
+        InternalJSEngine.__init__(self, source, init_global, init_del_gobjects)
+
+    __init__.__doc__ = AbstractJSEngine.__init__.__doc__
 
     class Context:
         def __init__(self, engine):
