@@ -32,6 +32,7 @@ class AbstractJSEngine(object):
                 use to delete some variables in the global.
         '''
         self._source = []
+        self._stand_source = []
         init_script = []
         if init_global:
             init_script.append(init_global_script)
@@ -44,34 +45,43 @@ class AbstractJSEngine(object):
     @property
     def source(self):
         '''All the inputted Javascript code.'''
+        self._append_stand_source()
         return u'\n'.join(self._source)
 
-    def _append_source(self, code):
-        if code:
-            self._source.append(code)
-
-    def _check_code(self, code):
+    @staticmethod
+    def _check_code(code, last_source):
         # Input unicode
         code = to_unicode(code)
         first_c = code.lstrip()[:1]
         if first_c:
             # Simple separator check
-            last_c = self._source and self._source[-1].rstrip()[-1:] or ''
+            last_c = last_source and last_source[-1].rstrip()[-1:]
             if last_c and (first_c in u'([`/' and last_c.isdecimal() or
-                           first_c in u'`/' and last_c not in ',;}+-*/%!=<>&|'):
+                           first_c in u'`/' and last_c not in u',;}+-*/%!=<>&|'):
                 code = u';' + code
             return code
 
+    def _append_stand_source(self):
+        if self._stand_source:
+            code = u'\n'.join(self._stand_source)
+            self._stand_source.clear()
+            self._source.append(code)
+            self._append(code)
+
     def append(self, code):
         '''Run Javascript code and return none.'''
-        code = self._check_code(code)
+        code = self._check_code(code, self._stand_source or self._source)
         if code:
-            self._append(code)
+            self._stand_source.append(code)
 
     def eval(self, code):
         '''Run Javascript code and return result.'''
-        code = self._check_code(code)
+        self._append_stand_source()
+        code = self._check_code(code, self._source)
         if code:
+            if code[-1] != ';':
+                code += ';'  # eval code MUST be standalone
+            self._source.append(code)
             return self._eval(code)
 
     def call(self, identifier, *args):
@@ -80,10 +90,10 @@ class AbstractJSEngine(object):
         chunks = [to_unicode(chunk) for chunk in chunks]
         args = u''.join(chunks)[1:-1]
         code = u'{identifier}({args})'.format(**vars())
-        return self._eval(code)
+        return self.eval(code)
 
     def _append(self, code):
-        raise NotImplementedError('Method must be implemented by subclass')
+        pass
 
     def _eval(self, code):
         raise NotImplementedError('Method must be implemented by subclass')

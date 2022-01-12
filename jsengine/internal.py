@@ -8,7 +8,7 @@ class InternalJSEngine(AbstractJSEngine):
     '''Wrappered for Internal(DLL) Javascript interpreter.'''
 
     def __init__(self, *args, **kwargs):
-        self._context = self.Context(self)
+        self._context = self.Context()
         AbstractJSEngine.__init__(self, *args, **kwargs)
 
     def _append(self, code):
@@ -18,7 +18,7 @@ class InternalJSEngine(AbstractJSEngine):
         return self._context.eval(code)
 
     class Context:
-        def __init__(self, engine):
+        def __init__(self):
             raise NotImplementedError('Class `Context` must be implemented by subclass')
 
 
@@ -40,12 +40,10 @@ class ChakraJSEngine(InternalJSEngine):
     __init__.__doc__ = AbstractJSEngine.__init__.__doc__
 
     class Context:
-        def __init__(self, engine):
-            self._engine = engine
+        def __init__(self):
             self._context = _d.ChakraHandle()
 
         def eval(self, code, eval=True, raw=False):
-            self._engine._append_source(code)
             ok, result = self._context.eval(code, raw=raw)
             if ok:
                 if eval:
@@ -72,13 +70,11 @@ class QuickJSEngine(InternalJSEngine):
     __init__.__doc__ = AbstractJSEngine.__init__.__doc__
 
     class Context:
-        def __init__(self, engine):
-            self._engine = engine
+        def __init__(self):
             self._context = _d.quickjs.Context()
             self.typeof = self.Function(self, self._context.eval(u'(obj => typeof obj)'))
 
         def eval(self, code, eval=True, raw=False):
-            self._engine._append_source(code)
             try:
                 result = self._context.eval(code)
             except _d.quickjs.JSException as e:

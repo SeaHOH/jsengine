@@ -49,11 +49,7 @@ class ExternalJSEngine(AbstractJSEngine):
 
     __init__.__doc__ = AbstractJSEngine.__init__.__doc__ + __init__.__doc__[9:]
 
-    def _append(self, code):
-        self._append_source(code)
-
     def _eval(self, code):
-        self._append_source(code)
         code = self._inject_script()
 
         evalstring = False
