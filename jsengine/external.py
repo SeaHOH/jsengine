@@ -103,7 +103,8 @@ class ExternalJSEngine(AbstractJSEngine):
             raise RuntimeError('%r returns non-zero value! Error msg: %s' %
                                (_d.external_interpreter, stderr_data.decode('utf8')))
         elif stderr_data:
-            print("%r has warnings:" % _d.external_interpreter, stderr_data.decode('utf8'))
+            print("%r has warnings:" % _d.external_interpreter,
+                  stderr_data.decode('utf8'), file=sys.stderr)
         # Output unicode
         return stdout_data.decode('utf8')
 

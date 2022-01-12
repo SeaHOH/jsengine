@@ -1,10 +1,16 @@
+import os
 import sys
 import json
 
 try:
     from shutil import which
 except ImportError:
-    from distutils.spawn import find_executable as which
+    from distutils.spawn import find_executable
+
+    def which(cmd, mode=os.X_OK, path=None):
+        cmd = find_executable(cmd, path)
+        if cmd and os.access(cmd, mode):
+            return cmd
 
 
 if sys.version_info > (3,):
