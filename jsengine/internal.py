@@ -17,7 +17,7 @@ class InternalJSEngine(AbstractJSEngine):
     def _eval(self, code):
         return self._context.eval(code)
 
-    class Context:
+    class Context(object):
         def __init__(self):
             raise NotImplementedError('Class `Context` must be implemented by subclass')
 
@@ -39,7 +39,7 @@ class ChakraJSEngine(InternalJSEngine):
 
     __init__.__doc__ = AbstractJSEngine.__init__.__doc__
 
-    class Context:
+    class Context(object):
         def __init__(self):
             self._context = _d.ChakraHandle()
 
@@ -69,7 +69,7 @@ class QuickJSEngine(InternalJSEngine):
 
     __init__.__doc__ = AbstractJSEngine.__init__.__doc__
 
-    class Context:
+    class Context(object):
         def __init__(self):
             self._context = _d.quickjs.Context()
             self.typeof = self.Function(self, self._context.eval(u'(obj => typeof obj)'))
@@ -88,7 +88,7 @@ class QuickJSEngine(InternalJSEngine):
                     else:
                         return json.loads(result.json())
 
-        class Function:
+        class Function(object):
             # PetterS/quickjs/Issue7
             # Escape StackOverflow when calling function outside
             def __init__(self, context, function):

@@ -118,8 +118,11 @@ class ExternalJSEngine(AbstractJSEngine):
         fd, filename = tempfile.mkstemp(prefix='execjs', suffix='.js')
         try:
             # Write bytes
-            with open(fd, 'wb') as fp:
-                fp.write(to_bytes(code))
+            try:
+                with os.fdopen(fd, 'wb') as fp:
+                    fp.write(to_bytes(code))
+            except BaseException:
+                os.close(fd)
             return self._run_interpreter(self.interpreter.command + [filename])
         finally:
             os.remove(filename)
@@ -132,7 +135,7 @@ class ExternalJSEngine(AbstractJSEngine):
         return injected_script.format(source=source)
 
 
-class ExternalInterpreter:
+class ExternalInterpreter(object):
     '''External interpreter setting.'''
 
     @classmethod

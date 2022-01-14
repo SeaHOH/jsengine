@@ -16,7 +16,7 @@ except:
     chakra_available = False
 
 
-class ChakraHandle():
+class ChakraHandle(object):
 
     def __init__(self):
         # create chakra runtime and context

@@ -64,7 +64,7 @@ class AbstractJSEngine(object):
     def _append_stand_source(self):
         if self._stand_source:
             code = u'\n'.join(self._stand_source)
-            self._stand_source.clear()
+            self._stand_source = []
             self._source.append(code)
             self._append(code)
 
