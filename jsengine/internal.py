@@ -1,4 +1,5 @@
 from jsengine.abstract import AbstractJSEngine
+from jsengine.chakra import ChakraHandle
 from jsengine.exceptions import *
 import jsengine.detect as _d
 import json
@@ -21,6 +22,9 @@ class InternalJSEngine(AbstractJSEngine):
         def __init__(self):
             raise NotImplementedError('Class `Context` must be implemented by subclass')
 
+        def eval(self, code, eval=True, raw=False):
+            pass
+
 
 class ChakraJSEngine(InternalJSEngine):
     '''Wrappered for system's built-in Chakra or PyChakra(ChakraCore).'''
@@ -41,7 +45,7 @@ class ChakraJSEngine(InternalJSEngine):
 
     class Context(object):
         def __init__(self):
-            self._context = _d.ChakraHandle()
+            self._context = ChakraHandle(ChakraJSEngine.threading)
 
         def eval(self, code, eval=True, raw=False):
             ok, result = self._context.eval(code, raw=raw)

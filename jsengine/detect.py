@@ -1,32 +1,21 @@
 from __future__ import print_function
 
-import os
 import sys
 import platform
 from jsengine.util import which
 
-
-chakra_available = False
-quickjs_available = False
-external_interpreter = None
-
-# PyChakra
-try:
-    from PyChakra import Runtime as ChakraHandle, get_lib_path
-    if not os.path.isfile(get_lib_path()):
-        raise RuntimeError
-except (ImportError, RuntimeError):
-    pass
-else:
-    chakra_available = True
+# PyChakra or Windows built-in Chakra
+from jsengine.chakra import chakra_available
 
 # PyQuickJS
 try:
     import quickjs
 except ImportError:
-    pass
+    quickjs_available = False
 else:
     quickjs_available = True
+
+external_interpreter = None
 
 # macOS: built-in JavaScriptCore
 if platform.system() == 'Darwin':
@@ -38,11 +27,8 @@ if platform.system() == 'Darwin':
         if external_interpreter:
             break
 
-# Windows: built-in Chakra, or Node.js, QuickJS if installed
+# Windows: Node.js, QuickJS if installed
 elif platform.system() == 'Windows':
-    if not chakra_available:
-        from jsengine.chakra_win import ChakraHandle, chakra_available
-
     for interpreter in ('qjs', 'node', 'nodejs'):
         external_interpreter = which(interpreter)
         if external_interpreter:

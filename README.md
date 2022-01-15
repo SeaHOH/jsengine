@@ -85,9 +85,11 @@ Use a specified external Javascript interpreter.
 binary = binary_name or binary_path
 kwargs = {
     'name': 'None or any string',  # see ExternalInterpreterNameAlias.keys()
-    'tempfile': True,              # use tempfile or not
-    'evalstring': True,            # can run command string as Javascript
-                                   # or can not, '-e script_code'
+    'tempfile': True,              # use tempfile or not. Default is False, fallback is True
+    'evalstring': True,            # can run command string as Javascript or can not,
+                                   # just like '-e script_code'
+                                   # instead of True, supported argument can be passed,
+                                   # e.g. '--eval', '--execute'
     'args': [args1, args2, ...]    # arguments used for interpreter
 }
 
@@ -108,6 +110,32 @@ try:
 except jsengine.RuntimeError:
     ...  # do something if useless
 ```
+
+Use threading lock. Javascript source itself always be ran in single threaded,
+that just make the APIs can be used in multithreadeding.
+```python
+jsengine.set_threading(True)   # MUST enable befor using, it's disabled by default
+
+ctx_quickjs = jsengine.QuickJSEngine()
+ctx_chakra = jsengine.ChakraJSEngine()   # internal chakra will creat an extra thread per context
+ctx_exter = jsengine.ExternalJSEngine()  # external interpreter will be called one by one with context
+
+...  # do multithreading
+
+jsengine.set_threading(False)  # disable is not necessary
+```
+
+
+# Internal VS. External
+|                 | QuickJSEngine  | ChakraJSEngine | ExternalJSEngine     |
+| ----------------| :------------: | :------------: | :------------------: |
+| Load backend on | import         | import or init | every fetch result   |
+| Loading speed   | fastest        |                | very slow            |
+| Performance     |                | highest        | low, if much results |
+| Fetch result    | run the passed | run the passed | run all/full source  |
+| Call `append()` | will be ran    | will be ran    | defer to next result |
+
+\* Fetch results means call `eval()/call()`.
 
 
 # License

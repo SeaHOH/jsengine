@@ -6,16 +6,17 @@
 import platform
 import jsengine.detect as _d
 from jsengine.exceptions import *
-from jsengine.internal import QuickJSEngine, ChakraJSEngine
+from jsengine.abstract import AbstractJSEngine
+from jsengine.internal import ChakraJSEngine, QuickJSEngine
 from jsengine.external import ExternalJSEngine, ExternalInterpreter
 
 
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 
 __all__ = ['JSEngine', 'ChakraJSEngine', 'QuickJSEngine', 'ExternalJSEngine',
            'ExternalInterpreter', 'set_external_interpreter',
            'Error', 'RuntimeError', 'ProgramError',
-           'jsengine', 'eval']
+           'jsengine', 'eval', 'set_threading']
 
 
 def set_external_interpreter(interpreter, *args, **kwargs):
@@ -34,11 +35,11 @@ if _d.external_interpreter:
 
 # Prefer InternalJSEngine (via dynamic library loading)
 if _d.quickjs_available:
-    JSEngine = QuickJSEngine
+    JSEngine = QuickJSEngine     # The fastest loading
 elif _d.chakra_available:
-    JSEngine = ChakraJSEngine
+    JSEngine = ChakraJSEngine    # High performance
 elif _d.external_interpreter:
-    JSEngine = ExternalJSEngine
+    JSEngine = ExternalJSEngine  # Very slow loading, and one result one loading
 else:
     JSEngine = None
 
@@ -59,3 +60,6 @@ def eval(source):
     '''Run Javascript code use the default engine and return result.'''
     return jsengine().eval(source)
 
+def set_threading(threading=True):
+    '''Set the feature whether to use threading lock or not.'''
+    AbstractJSEngine.threading = threading

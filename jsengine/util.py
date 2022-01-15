@@ -27,8 +27,7 @@ def to_bytes(s):
     return s
 
 def json_encoder_fallback(o):
-    # Allow bytes (python3)
-    if isinstance(o, bytes):
+    if isinstance(o, (bytes, bytearray)):
         return to_unicode(o)
     return json.JSONEncoder.default(json_encoder, o)
 
@@ -51,3 +50,14 @@ json_encoder_ensure_ascii = json.JSONEncoder(
     separators=None,
     default=None,
 )
+
+def lockmethod(func):
+    def newfunc(self, *args, **kwargs):
+        if self._lock is None:
+            return func(self, *args, **kwargs)
+        self._lock.acquire()
+        try:
+            return func(self, *args, **kwargs)
+        finally:
+            self._lock.release()
+    return newfunc

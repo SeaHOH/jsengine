@@ -3,6 +3,7 @@
 
 import unittest
 import platform
+import threading
 from jsengine import *
 import jsengine
 
@@ -189,11 +190,30 @@ class JSEngineES6Tests(unittest.TestCase):
         self.assertEqual(ctx.eval('0o11'), 9)
         self.assertEqual(ctx.eval('0O11'), 9)
 
-    #@skip_or_reinit
-    #def test_96_performance(self):
-    #    if JSEngine is ExternalJSEngine:
-    #        return
-    #    ctx.eval('for ( let i = 1; i < 10 ** 7; i ++ ) { i + 1 }')
+    @skip_or_reinit
+    def test_96_engine_threading(self):
+        set_threading(True)
+        try:
+            _ctx = JSEngine('''
+            function ping(o) {
+                return o
+            }''')
+
+            class TT(threading.Thread):
+                def run(s):
+                    for i in range(9):
+                        self.assertEqual(_ctx.call('ping', i), i)
+
+            t_list = []
+            for _ in range(9):
+                t = TT()
+                t.daemon = True
+                t.start()
+                t_list.append(t)
+            for p in t_list:
+                p.join()
+        finally:
+            set_threading(False)
 
     @skip_or_reinit
     def test_97_engine_in_out_string(self):
@@ -203,14 +223,16 @@ class JSEngineES6Tests(unittest.TestCase):
         self.assertEqual(ctx.eval(rs), us)
         self.assertEqual(ctx.eval(jsengine.util.to_unicode(rs)), us)
         self.assertEqual(ctx.eval(jsengine.util.to_bytes(rs)), us)
+        self.assertEqual(ctx.eval(bytearray(jsengine.util.to_bytes(rs))), us)
         ctx.append('''
-        function ping(s1, s2, s3) {
-            return [s1, s2, s3]
+        function ping(s1, s2, s3, s4) {
+            return [s1, s2, s3, s4]
         }''')
         # Mixed string types input
-        self.assertEqual(ctx.call('ping',
-                ss, jsengine.util.to_unicode(ss), jsengine.util.to_bytes(ss)),
-                [us] * 3)
+        self.assertEqual(ctx.call('ping', ss,
+                jsengine.util.to_unicode(ss),
+                jsengine.util.to_bytes(ss),
+                bytearray(jsengine.util.to_bytes(ss))), [us] * 4)
 
     @skip_or_reinit
     def test_98_return_none(self):
@@ -225,6 +247,12 @@ class JSEngineES6Tests(unittest.TestCase):
             print('SOURCE CODE END\n')
         else:
             ctx.source
+
+    #@skip_or_reinit
+    #def test_FF_performance(self):
+    #    if JSEngine is ExternalJSEngine:
+    #        return
+    #    ctx.eval('for ( let i = 1; i < 1e7; i ++ ) { i + 1 }')
 
 
 def test_engine(engine):

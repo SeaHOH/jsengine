@@ -1,4 +1,5 @@
-from jsengine.util import to_unicode, json_encoder
+from jsengine.util import to_unicode, json_encoder, lockmethod
+import threading
 
 
 # Some simple compatibility processing
@@ -18,7 +19,9 @@ if (typeof {gobject} !== 'undefined')
 '''
 
 
-class AbstractJSEngine(object):
+class AbstractJSEngine(object):  # Just a naming, no abc
+
+    threading = False
 
     def __init__(self, source=u'', init_global=False, init_del_gobjects=[]):
         '''Create a JSEngine content.
@@ -31,6 +34,10 @@ class AbstractJSEngine(object):
             init_del_gobjects:
                 use to delete some variables in the global.
         '''
+        if self.threading:
+            self._lock = threading.RLock()
+        else:
+            self._lock = None
         self._source = []
         self._stand_source = []
         init_script = []
@@ -43,6 +50,7 @@ class AbstractJSEngine(object):
         self.append(source)
 
     @property
+    @lockmethod
     def source(self):
         '''All the inputted Javascript code.'''
         self._append_stand_source()
@@ -68,12 +76,14 @@ class AbstractJSEngine(object):
             self._source.append(code)
             self._append(code)
 
+    @lockmethod
     def append(self, code):
         '''Run Javascript code and return none.'''
         code = self._check_code(code, self._stand_source or self._source)
         if code:
             self._stand_source.append(code)
 
+    @lockmethod
     def eval(self, code):
         '''Run Javascript code and return result.'''
         self._append_stand_source()
@@ -84,6 +94,7 @@ class AbstractJSEngine(object):
             self._source.append(code)
             return self._eval(code)
 
+    @lockmethod
     def call(self, identifier, *args):
         '''Use name string and arguments to call Javascript function.'''
         chunks = json_encoder.iterencode(args, _one_shot=True)
