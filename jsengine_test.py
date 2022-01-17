@@ -217,22 +217,20 @@ class JSEngineES6Tests(unittest.TestCase):
 
     @skip_or_reinit
     def test_97_engine_in_out_string(self):
-        ss = 'αβγ'
-        rs = '"αβγ"'
-        us = jsengine.util.to_unicode(ss)
+        us = u'αβγ'
+        rs = u'"αβγ"'
+        self.assertEqual(ctx.eval('"αβγ"'), us)
         self.assertEqual(ctx.eval(rs), us)
-        self.assertEqual(ctx.eval(jsengine.util.to_unicode(rs)), us)
-        self.assertEqual(ctx.eval(jsengine.util.to_bytes(rs)), us)
-        self.assertEqual(ctx.eval(bytearray(jsengine.util.to_bytes(rs))), us)
+        self.assertEqual(ctx.eval(rs.encode('utf8')), us)
+        self.assertEqual(ctx.eval(bytearray(rs.encode('utf8'))), us)
         ctx.append('''
         function ping(s1, s2, s3, s4) {
             return [s1, s2, s3, s4]
         }''')
-        # Mixed string types input
-        self.assertEqual(ctx.call('ping', ss,
-                jsengine.util.to_unicode(ss),
-                jsengine.util.to_bytes(ss),
-                bytearray(jsengine.util.to_bytes(ss))), [us] * 4)
+        self.assertEqual(ctx.call('ping', 'αβγ'
+                                          us,
+                                          us.encode('utf8'),
+                                bytearray(us.encode('utf8'))), [us] * 4)
 
     @skip_or_reinit
     def test_98_return_none(self):

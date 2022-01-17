@@ -1,6 +1,6 @@
 
 # Copyright (c) 2019 coslyk
-# Copyright (c) 2019 - 2021 SeaHOH <SeaHOH@gmail.com>
+# Copyright (c) 2019 - 2022 SeaHOH <SeaHOH@gmail.com>
 
 
 import platform

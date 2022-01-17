@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+from functools import wraps
 
 try:
     from shutil import which
@@ -52,6 +53,7 @@ json_encoder_ensure_ascii = json.JSONEncoder(
 )
 
 def lockmethod(func):
+    @wraps(func)
     def newfunc(self, *args, **kwargs):
         if self._lock is None:
             return func(self, *args, **kwargs)

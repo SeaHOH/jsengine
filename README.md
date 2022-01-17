@@ -117,7 +117,7 @@ that just make the APIs can be used in multithreadeding.
 jsengine.set_threading(True)   # MUST enable befor using, it's disabled by default
 
 ctx_quickjs = jsengine.QuickJSEngine()
-ctx_chakra = jsengine.ChakraJSEngine()   # internal chakra will creat an extra thread per context
+ctx_chakra = jsengine.ChakraJSEngine()   # internal chakra will create an extra thread per context
 ctx_exter = jsengine.ExternalJSEngine()  # external interpreter will be called one by one with context
 
 ...  # do multithreading
@@ -128,7 +128,7 @@ jsengine.set_threading(False)  # disable is not necessary
 
 # Internal VS. External
 |                 | QuickJSEngine  | ChakraJSEngine | ExternalJSEngine     |
-| ----------------| :------------: | :------------: | :------------------: |
+| --------------- | :------------: | :------------: | :------------------: |
 | Load backend on | import         | import or init | every fetch result   |
 | Loading speed   | fastest        |                | very slow            |
 | Performance     |                | highest        | low, if much results |
