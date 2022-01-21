@@ -12,10 +12,13 @@ call which is faster than the other one, via subprocess is external call.
     **Linux**: Gjs on Gnome, CJS on Cinnamon, etc.  
     **Windows**: Chakra (internal call, but not applicable to Windows 7)  
 
-- Two Python bindings (Recommend, internal call):
+- Python bindings (Recommend, internal call):
 
-    [PyChakra](https://github.com/zhengrenzhe/PyChakra),
-    [QuickJS](https://github.com/PetterS/quickjs)
+    [QuickJS](https://github.com/PetterS/quickjs)  
+    [PyChakra](https://github.com/zhengrenzhe/PyChakra)  
+    [PyMiniRacer (V8)](https://github.com/sqreen/PyMiniRacer)
+    (Caused by [a scope issue](https://github.com/sqreen/PyMiniRacer/issues/148),
+    its work process is similar to external call now)  
 
 - Any installed external Javascript interpreters, e.g.
 
@@ -118,6 +121,7 @@ jsengine.set_threading(True)   # MUST enable befor using, it's disabled by defau
 
 ctx_quickjs = jsengine.QuickJSEngine()
 ctx_chakra = jsengine.ChakraJSEngine()   # internal chakra will create an extra thread per context
+ctx_v8 = jsengine.V8JSEngine()
 ctx_exter = jsengine.ExternalJSEngine()  # external interpreter will be called one by one with context
 
 ...  # do multithreading
@@ -127,15 +131,15 @@ jsengine.set_threading(False)  # disable is not necessary
 
 
 # Internal VS. External
-|                 | QuickJSEngine  | ChakraJSEngine | ExternalJSEngine     |
-| --------------- | :------------: | :------------: | :------------------: |
-| Load backend on | import         | import or init | every fetch result   |
-| Loading speed   | fastest        |                | very slow            |
-| Performance     |                | highest        | low, if much results |
-| Fetch result    | run the passed | run the passed | run all/full source  |
-| Call `append()` | will be ran    | will be ran    | defer to next result |
+|                 | QuickJSEngine  | ChakraJSEngine | V8JSEngine           | ExternalJSEngine     |
+| --------------- | :------------: | :------------: | :------------------: | :------------------: |
+| Load backend on | import         | import or init | init                 | every fetch result   |
+| Loading speed   | fastest        | fast           | fast                 | very slow            |
+| Performance     |                | highest        | low, if much results | low, if much results |
+| Fetch result    | run the passed | run the passed | run all/full source  | run all/full source  |
 
-\* Fetch results means call `eval()/call()`.
+\* Fetch results means call `eval()/call()`.  
+\* V8JSEngine is now similar to ExternalJSEngine which caused by scope issue.  
 
 
 # License

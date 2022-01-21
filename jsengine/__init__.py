@@ -7,13 +7,13 @@ import platform
 import jsengine.detect as _d
 from jsengine.exceptions import *
 from jsengine.abstract import AbstractJSEngine
-from jsengine.internal import ChakraJSEngine, QuickJSEngine
+from jsengine.internal import V8JSEngine, ChakraJSEngine, QuickJSEngine
 from jsengine.external import ExternalJSEngine, ExternalInterpreter
 
 
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 
-__all__ = ['JSEngine', 'ChakraJSEngine', 'QuickJSEngine', 'ExternalJSEngine',
+__all__ = ['JSEngine', 'V8JSEngine', 'ChakraJSEngine', 'QuickJSEngine', 'ExternalJSEngine',
            'ExternalInterpreter', 'set_external_interpreter',
            'Error', 'RuntimeError', 'ProgramError',
            'jsengine', 'eval', 'set_threading']
@@ -38,6 +38,9 @@ if _d.quickjs_available:
     JSEngine = QuickJSEngine     # The fastest loading
 elif _d.chakra_available:
     JSEngine = ChakraJSEngine    # High performance
+elif _d.v8_available:
+    JSEngine = V8JSEngine        # High performance
+                                 # but superfluous calling caused by scope issue
 elif _d.external_interpreter:
     JSEngine = ExternalJSEngine  # Very slow loading, and one result one loading
 else:

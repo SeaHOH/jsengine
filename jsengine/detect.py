@@ -4,6 +4,9 @@ import sys
 import platform
 from jsengine.util import which
 
+# PyMiniRacer
+from jsengine.v8 import v8_available
+
 # PyChakra or Windows built-in Chakra
 from jsengine.chakra import chakra_available
 
@@ -48,7 +51,7 @@ else:
         if platform.system() == 'Linux':
             print('''\
 Please install at least one of the following Javascript interpreter.
-python packages: PyChakra, quickjs
+python packages: quickjs, PyChakra, PyMiniRacer
 applications: Gjs, CJS, QuickJS, JavaScriptCore, Node.js.''', file=sys.stderr)
 
         else:

@@ -155,7 +155,11 @@ class ChakraHandle(object):
 
     def __get_error(self, err):
         # js exception or other error
-        if err == 196609:
+        # 0x30000, JsErrorCategoryScript
+        # 0x30001, JsErrorScriptException
+        # 0x30002, JsErrorScriptCompile
+
+        if 0x30000 ^ err < 3:
             err = self.__get_exception()
         return False, err
 

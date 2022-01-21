@@ -227,7 +227,7 @@ class JSEngineES6Tests(unittest.TestCase):
         function ping(s1, s2, s3, s4) {
             return [s1, s2, s3, s4]
         }''')
-        self.assertEqual(ctx.call('ping', 'αβγ'
+        self.assertEqual(ctx.call('ping', 'αβγ',
                                           us,
                                           us.encode('utf8'),
                                 bytearray(us.encode('utf8'))), [us] * 4)
@@ -268,7 +268,7 @@ def test_main(external_interpreters):
     print('Default JSEngine is %r' % jsengine.JSEngine)
     print('Default external_interpreter is %r' % jsengine._d.external_interpreter)
 
-    for JSEngine in (ChakraJSEngine, QuickJSEngine):
+    for JSEngine in (V8JSEngine, ChakraJSEngine, QuickJSEngine):
         test_engine(JSEngine)
 
     for external_interpreter in external_interpreters:
