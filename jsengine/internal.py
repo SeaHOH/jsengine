@@ -1,6 +1,6 @@
 from jsengine.abstract import AbstractJSEngine
 from jsengine.chakra import ChakraHandle
-from jsengine.v8 import MiniRacer
+from jsengine.v8 import MiniRacer, esprima
 from jsengine.exceptions import *
 import jsengine.detect as _d
 import json
@@ -47,20 +47,32 @@ class V8JSEngine(InternalJSEngine):
 
     __init__.__doc__ = AbstractJSEngine.__init__.__doc__
 
-    # Here is a scope issue now, we MUST execute all codes at once.
+    # Here is a scope issue now, we MUST execute all codes at once, if there has
+    # no esprima package which use to split source code.
     # see https://github.com/sqreen/PyMiniRacer/issues/148
-    def _append(self, code):
-        pass
+    if not esprima:
+        def _append(self, code):
+            pass
 
-    def _eval(self, code):
-        return self._context.eval(self.source)
+        def _eval(self, code):
+            return self._context.eval(self.source)
 
     class Context(object):
         def __init__(self):
-            pass
+            if esprima:
+                self._context = MiniRacer()
+        
+        if esprima:
+            @property
+            def context(self):
+                return self._context
+        else:
+            @property
+            def context(self):
+                return MiniRacer()
 
         def eval(self, code, eval=True, raw=False):
-            ok, result = MiniRacer().eval(code, raw)
+            ok, result = self.context.eval(code, raw)
             if ok:
                 if eval:
                     return result

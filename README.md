@@ -18,7 +18,8 @@ call which is faster than the other one, via subprocess is external call.
     [PyChakra](https://github.com/zhengrenzhe/PyChakra)  
     [PyMiniRacer (V8)](https://github.com/sqreen/PyMiniRacer)
     (Caused by [a scope issue](https://github.com/sqreen/PyMiniRacer/issues/148),
-    its work process is similar to external call now)  
+    its work process is similar to external call now, to fix the scope issue,
+    [Esprima](https://github.com/Kronuz/esprima-python) is needed)  
 
 - Any installed external Javascript interpreters, e.g.
 
@@ -131,15 +132,15 @@ jsengine.set_threading(False)  # disable is not necessary
 
 
 # Internal VS. External
-|                 | QuickJSEngine  | ChakraJSEngine | V8JSEngine           | ExternalJSEngine     |
-| --------------- | :------------: | :------------: | :------------------: | :------------------: |
-| Load backend on | import         | import or init | init                 | every fetch result   |
-| Loading speed   | fastest        | fast           | fast                 | very slow            |
-| Performance     |                | highest        | low, if much results | low, if much results |
-| Fetch result    | run the passed | run the passed | run all/full source  | run all/full source  |
+|                 | QuickJSEngine  | ChakraJSEngine | V8JSEngine (esprima) | V8JSEngine \**       | ExternalJSEngine     |
+| --------------- | :------------: | :------------: | :------------------: | :------------------: | :------------------: |
+| Load backend on | import         | import or init | init                 | init                 | every fetch result   |
+| Loading speed   | fastest        | fast           | very slow with py3   | fast                 | very slow            |
+| Performance     |                | highest        | high                 | low, if much results | low, if much results |
+| Fetch result    | run the passed | run the passed | run the passed       | run all/full source  | run all/full source  |
 
 \* Fetch results means call `eval()/call()`.  
-\* V8JSEngine is now similar to ExternalJSEngine which caused by scope issue.  
+\** V8JSEngine is now similar to ExternalJSEngine which caused by scope issue.  
 
 
 # License
