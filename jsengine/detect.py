@@ -37,8 +37,11 @@ elif platform.system() == 'Windows':
         if external_interpreter:
             break
 
-    if not chakra_available and not quickjs_available and external_interpreter is None:
-        print('Please install PyChakra or Node.js!', file=sys.stderr)
+    if external_interpreter is None and \
+            not v8_available and \
+            not chakra_available and \
+            not quickjs_available:
+        print('Please install PyChakra, PyMiniRacer or Node.js!', file=sys.stderr)
 
 # Linux: Gjs on Gnome, CJS on Cinnamon, or JavaScriptCore, Node.js if installed
 else:
@@ -47,7 +50,10 @@ else:
         if external_interpreter:
             break
 
-    if not chakra_available and not quickjs_available and external_interpreter is None:
+    if external_interpreter is None and \
+            not v8_available and \
+            not chakra_available and \
+            not quickjs_available:
         if platform.system() == 'Linux':
             print('''\
 Please install at least one of the following Javascript interpreter.

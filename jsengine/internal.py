@@ -157,7 +157,7 @@ class QuickJSEngine(InternalJSEngine):
                         return json.loads(result.json())
 
         if _d.quickjs_available and \
-                not hasattr(_d.quickjs.Function, 'execute_pending_job'):
+                not hasattr(_d.quickjs.Context, 'execute_pending_job'):
             # this is < v1.17.0
             # It was fixed in v1.16.0, but there is no version string to judge.
             class Function(object):

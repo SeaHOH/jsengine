@@ -89,8 +89,8 @@ class AbstractJSEngine(object):  # Just a naming, no abc
         self._append_stand_source()
         code = self._check_code(code, self._source)
         if code:
-            if code[-1] != ';':
-                code += ';'  # eval code MUST be standalone
+            if code[-1] != u';':
+                code += u';'  # eval code MUST be standalone
             self._source.append(code)
             return self._eval(code)
 
