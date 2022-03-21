@@ -247,7 +247,7 @@ Object.defineProperty(_JSEngineHelper, 'print', {{
     value: function(s) {{
         if (typeof console !== 'undefined' && typeof console.log !== 'undefined')
             console.log(s)
-        else if (typeof print === 'undefined')
+        else if (typeof print === 'function')
             print(s)
     }},
     writable: false,
