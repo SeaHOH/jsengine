@@ -11,7 +11,7 @@ from jsengine.internal import V8JSEngine, ChakraJSEngine, QuickJSEngine
 from jsengine.external import ExternalJSEngine, ExternalInterpreter
 
 
-__version__ = '1.0.4'
+__version__ = '1.0.5'
 
 __all__ = ['JSEngine', 'V8JSEngine', 'ChakraJSEngine', 'QuickJSEngine', 'ExternalJSEngine',
            'ExternalInterpreter', 'set_external_interpreter',
