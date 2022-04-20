@@ -160,7 +160,7 @@ class ExternalInterpreter(object):
                 whether to use tempfile or not to pass Javascript code.
             evalstring:
                 whether to use shell cmd or not to pass Javascript code.
-                if set True, default param is `-c`.
+                if set True, default param is `-e`.
                 here also accept other valid params likes `--execute`
             args:
                 any valid params of the interpreter.
