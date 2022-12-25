@@ -191,6 +191,11 @@ class JSEngineES6Tests(unittest.TestCase):
         self.assertEqual(ctx.eval('0O11'), 9)
 
     @skip_or_reinit
+    def test_95_engine_scope(self):
+        ctx.eval('let escope = 5')
+        self.assertEqual(ctx.eval('escope'), 5)
+
+    @skip_or_reinit
     def test_96_engine_threading(self):
         set_threading(True)
         try:
