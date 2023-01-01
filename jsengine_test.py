@@ -9,10 +9,17 @@ import jsengine
 
 
 print_source_code = False
+function = type(lambda: None)
 
-def skip_or_reinit(func):
+def skip_or_reinit(func, skip_engine={}):
+    if not isinstance(func, function):
+        skip_engine['skip_engine'] = func
+        return skip_or_reinit
+    skip_engine = skip_engine.pop('skip_engine', None)
     def newfunc(*args, **kwargs):
         global ctx
+        if skip_engine is JSEngine:
+            raise unittest.SkipTest(skip_engine.__name__)
         if ctx:
             try:
                 func(*args, **kwargs)
@@ -191,6 +198,19 @@ class JSEngineES6Tests(unittest.TestCase):
         self.assertEqual(ctx.eval('0O11'), 9)
 
     @skip_or_reinit
+    def test_15_class_fields(self):
+        # ChakraCore failed
+        ctx.eval('''
+        class ClassFields {
+          instanceField;
+          #privateField;
+          #privateMethod() {}
+          static staticField;
+          static #privateStaticField;
+          static #privateStaticMethod() {}
+        }''')
+
+    @skip_or_reinit
     def test_94_call_this(self):
         ctx.eval('''
         This1 = {
@@ -209,7 +229,7 @@ class JSEngineES6Tests(unittest.TestCase):
         ctx.eval('let escope = 5')
         self.assertEqual(ctx.eval('escope'), 5)
 
-    @skip_or_reinit
+    @skip_or_reinit(ExternalJSEngine)
     def test_96_engine_threading(self):
         set_threading(True)
         try:

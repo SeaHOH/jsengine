@@ -74,7 +74,7 @@ class ExternalJSEngine(AbstractJSEngine):
 
             output = output.replace(u'\r\n', u'\n').replace(u'\r', u'\n')
             # Search result in the last 5 lines of output
-            for result_line in output.split(u'\n')[-5:]:
+            for result_line in reversed(output.split(u'\n')[-5:]):
                 if result_line[:9] == u'["result"':
                     break
             try:
