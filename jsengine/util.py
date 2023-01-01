@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import locale
 from functools import wraps
 
 try:
@@ -14,13 +15,28 @@ except ImportError:
             return cmd
 
 
-if sys.version_info > (3,):
-    unicode = str
+unicode = u''.__class__
+fallback_encodings = set((sys.getfilesystemencoding(),
+                          hasattr(locale,'getencoding') and
+                          locale.getencoding() or
+                          locale.getdefaultlocale()[1],
+                          locale.getpreferredencoding(False)))
+fallback_encodings.discard(None)
+fallback_encodings.discard('utf-8')
+fallback_encodings = list(fallback_encodings)
 
 def to_unicode(s):
-    if not isinstance(s, unicode):
-        s = s.decode('utf8')
-    return s
+    if isinstance(s, unicode):
+        return s
+    try:
+        return s.decode('utf8')
+    except UnicodeDecodeError:
+        for encoding in fallback_encodings:
+            try:
+                return s.decode(encoding)
+            except UnicodeDecodeError:
+                pass
+        raise
 
 def to_bytes(s):
     if isinstance(s, unicode):
