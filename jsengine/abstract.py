@@ -1,4 +1,4 @@
-from jsengine.util import to_unicode, json_encoder, lockmethod
+from jsengine.util import to_unicode, json_encoder, lockmethod, get_exec_code
 import threading
 
 
@@ -94,14 +94,18 @@ class AbstractJSEngine(object):  # Just a naming, no abc
             self._source.append(code)
             return self._eval(code)
 
+    exec(get_exec_code(4, """
     @lockmethod
-    def call(self, expression, *args, this=None):
+    def call(self, expression, *args, **kwargs):   # py2
+    def call(self, expression, *args, this=None):  # py3
         '''Use expression string and Python arguments to call Javascript function.
-        If provided, params `this` also be a expression string.
+        If provided, the keyword argument `this` also be a expression string.
+        Other keyword arguments will be ignored.   # py2
         '''
         chunks = json_encoder.iterencode(args, _one_shot=True)
         chunks = [to_unicode(chunk) for chunk in chunks]
         args = u''.join(chunks)
+        this = kwargs.get('this')                  # py2
         if this is None:
             args = args[1:-1]
             code = u'({expression})({args})'
@@ -109,6 +113,7 @@ class AbstractJSEngine(object):  # Just a naming, no abc
             this = to_unicode(this)
             code = u'({expression}).apply(({this}), {args})'
         return self.eval(code.format(**vars()))
+    """))
 
     def _append(self, code):
         pass

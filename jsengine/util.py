@@ -79,3 +79,12 @@ def lockmethod(func):
         finally:
             self._lock.release()
     return newfunc
+
+def get_exec_code(indent, code, py2=sys.version_info<(3,)):
+    lines = []
+    for line in code.split('\n'):
+        pyv = line[-5:]
+        if pyv == '# py2' and not py2 or pyv == '# py3' and py2:
+            continue
+        lines.append(line[indent:])
+    return '\n'.join(lines)
