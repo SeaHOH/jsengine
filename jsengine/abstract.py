@@ -95,13 +95,20 @@ class AbstractJSEngine(object):  # Just a naming, no abc
             return self._eval(code)
 
     @lockmethod
-    def call(self, identifier, *args):
-        '''Use name string and arguments to call Javascript function.'''
+    def call(self, expression, *args, this=None):
+        '''Use expression string and Python arguments to call Javascript function.
+        If provided, params `this` also be a expression string.
+        '''
         chunks = json_encoder.iterencode(args, _one_shot=True)
         chunks = [to_unicode(chunk) for chunk in chunks]
-        args = u''.join(chunks)[1:-1]
-        code = u'{identifier}({args})'.format(**vars())
-        return self.eval(code)
+        args = u''.join(chunks)
+        if this is None:
+            args = args[1:-1]
+            code = u'({expression})({args})'
+        else:
+            this = to_unicode(this)
+            code = u'({expression}).apply(({this}), {args})'
+        return self.eval(code.format(**vars()))
 
     def _append(self, code):
         pass
