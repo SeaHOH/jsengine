@@ -1,6 +1,6 @@
 
 # Copyright (c) 2019 coslyk
-# Copyright (c) 2019 - 2022 SeaHOH <SeaHOH@gmail.com>
+# Copyright (c) 2019 - 2023 SeaHOH <SeaHOH@gmail.com>
 
 
 import platform
@@ -11,7 +11,7 @@ from jsengine.internal import V8JSEngine, ChakraJSEngine, QuickJSEngine
 from jsengine.external import ExternalJSEngine, ExternalInterpreter
 
 
-__version__ = '1.0.6'
+__version__ = '1.0.7'
 
 __all__ = ['JSEngine', 'V8JSEngine', 'ChakraJSEngine', 'QuickJSEngine', 'ExternalJSEngine',
            'ExternalInterpreter', 'set_external_interpreter',
